@@ -1,0 +1,2 @@
+[console_scripts]
+aux-server = aux.server.websocket_server:main

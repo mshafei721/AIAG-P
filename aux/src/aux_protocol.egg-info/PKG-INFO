@@ -1,0 +1,141 @@
+Metadata-Version: 2.4
+Name: aux-protocol
+Version: 0.1.0
+Summary: AUX Protocol - Browser automation protocol with AI capabilities
+Author-email: AUX Protocol Team <team@aux-protocol.dev>
+License: MIT
+Project-URL: Homepage, https://github.com/aux-protocol/aux-python
+Project-URL: Documentation, https://aux-protocol.readthedocs.io
+Project-URL: Repository, https://github.com/aux-protocol/aux-python
+Project-URL: Bug Tracker, https://github.com/aux-protocol/aux-python/issues
+Keywords: browser,automation,protocol,websocket,ai,testing
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Internet :: WWW/HTTP :: Browsers
+Classifier: Topic :: Software Development :: Testing
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: websockets>=11.0.2
+Requires-Dist: playwright>=1.40.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pytest>=7.0.0
+Provides-Extra: dev
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx>=6.0.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.2.0; extra == "docs"
+
+# AUX Protocol
+
+AUX (Automated User eXperience) Protocol is a modern browser automation protocol designed for AI-driven web interactions. It provides a WebSocket-based interface for controlling browsers with advanced capabilities for AI agents and automated testing.
+
+## Features
+
+- **WebSocket-based Communication**: Real-time bidirectional communication between clients and browser instances
+- **AI-Optimized**: Designed specifically for AI agents with structured command schemas
+- **Browser Management**: Advanced browser instance management with isolation and resource control
+- **Extensible Architecture**: Modular design supporting custom commands and extensions
+- **Type Safety**: Full TypeScript/Python type definitions with Pydantic models
+
+## Installation
+
+```bash
+pip install aux-protocol
+```
+
+For development:
+
+```bash
+pip install aux-protocol[dev]
+```
+
+## Quick Start
+
+### Starting the AUX Server
+
+```python
+from aux.server import WebSocketServer
+
+server = WebSocketServer(host="localhost", port=8080)
+server.start()
+```
+
+### Using the Client SDK
+
+```python
+from aux.client import AUXClient
+
+async def main():
+    client = AUXClient("ws://localhost:8080")
+    await client.connect()
+    
+    # Create a browser session
+    session = await client.create_session()
+    
+    # Navigate to a page
+    await session.navigate("https://example.com")
+    
+    # Interact with elements
+    await session.click("#my-button")
+    
+    await client.disconnect()
+```
+
+## Architecture
+
+The AUX Protocol consists of four main components:
+
+- **Server**: WebSocket server managing browser instances and client connections
+- **Browser Manager**: Handles browser lifecycle, isolation, and resource management
+- **Client SDK**: Python/JavaScript SDKs for easy integration
+- **Schema**: Command and event definitions using Pydantic models
+
+## Development
+
+### Setup
+
+```bash
+git clone https://github.com/aux-protocol/aux-python
+cd aux-python
+pip install -e .[dev]
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black src/ tests/
+isort src/ tests/
+```
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines and submit pull requests to our GitHub repository.
+
+## Support
+
+- **Documentation**: [https://aux-protocol.readthedocs.io](https://aux-protocol.readthedocs.io)
+- **Issues**: [GitHub Issues](https://github.com/aux-protocol/aux-python/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/aux-protocol/aux-python/discussions)
