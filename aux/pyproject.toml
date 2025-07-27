@@ -32,16 +32,30 @@ dependencies = [
     "playwright>=1.40.0",
     "pydantic>=2.0.0",
     "pytest>=7.0.0",
+    "typer>=0.9.0",
+    "pyyaml>=6.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-xdist>=3.2.0",
+    "pytest-html>=3.1.0",
+    "pytest-timeout>=2.1.0",
+    "pytest-repeat>=0.9.1",
     "black>=23.0.0",
     "isort>=5.12.0",
     "flake8>=6.0.0",
     "mypy>=1.0.0",
+    "bandit>=1.7.0",
+    "safety>=2.3.0",
+    "locust>=2.15.0",
+    "faker>=18.0.0",
+    "httpx>=0.24.0",
+    "aiofiles>=23.0.0",
 ]
 docs = [
     "sphinx>=6.0.0",
@@ -56,6 +70,7 @@ Repository = "https://github.com/aux-protocol/aux-python"
 
 [project.scripts]
 aux-server = "aux.server.websocket_server:main"
+aux-test = "aux.testing.main:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -106,8 +121,40 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src/aux",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml:coverage.xml",
+    "--cov-fail-under=90",
+    "--timeout=300",
+    "--benchmark-sort=mean",
+    "--benchmark-warmup=on",
+]
 asyncio_mode = "auto"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "security: Security tests", 
+    "performance: Performance tests",
+    "e2e: End-to-end tests",
+    "regression: Regression tests",
+    "slow: Slow running tests",
+    "browser: Tests requiring browser",
+    "network: Tests requiring network access",
+    "auth: Authentication tests",
+]
+timeout = 300
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
 
 [tool.coverage.run]
 source = ["src/aux"]

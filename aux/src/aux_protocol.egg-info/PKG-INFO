@@ -27,13 +27,27 @@ Requires-Dist: websockets>=11.0.2
 Requires-Dist: playwright>=1.40.0
 Requires-Dist: pydantic>=2.0.0
 Requires-Dist: pytest>=7.0.0
+Requires-Dist: typer>=0.9.0
+Requires-Dist: pyyaml>=6.0.0
 Provides-Extra: dev
 Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
 Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-mock>=3.10.0; extra == "dev"
+Requires-Dist: pytest-benchmark>=4.0.0; extra == "dev"
+Requires-Dist: pytest-xdist>=3.2.0; extra == "dev"
+Requires-Dist: pytest-html>=3.1.0; extra == "dev"
+Requires-Dist: pytest-timeout>=2.1.0; extra == "dev"
+Requires-Dist: pytest-repeat>=0.9.1; extra == "dev"
 Requires-Dist: black>=23.0.0; extra == "dev"
 Requires-Dist: isort>=5.12.0; extra == "dev"
 Requires-Dist: flake8>=6.0.0; extra == "dev"
 Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: bandit>=1.7.0; extra == "dev"
+Requires-Dist: safety>=2.3.0; extra == "dev"
+Requires-Dist: locust>=2.15.0; extra == "dev"
+Requires-Dist: faker>=18.0.0; extra == "dev"
+Requires-Dist: httpx>=0.24.0; extra == "dev"
+Requires-Dist: aiofiles>=23.0.0; extra == "dev"
 Provides-Extra: docs
 Requires-Dist: sphinx>=6.0.0; extra == "docs"
 Requires-Dist: sphinx-rtd-theme>=1.2.0; extra == "docs"

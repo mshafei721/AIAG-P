@@ -1,0 +1,43 @@
+# AUX Test Harness Configuration File
+# This file contains default configuration for test execution
+
+# Server settings
+server_url: "ws://localhost:8765"
+
+# Execution settings
+max_parallel_agents: 3
+execution_timeout: 300  # 5 minutes
+stop_on_first_failure: false
+
+# Agent behavior defaults
+default_behavior:
+  thinking_delay_range: [0.5, 1.5]
+  typing_speed_range: [80, 150]
+  action_delay_range: [0.2, 0.8]
+  retry_attempts: 3
+  retry_delay_range: [1.0, 3.0]
+  error_recovery_enabled: true
+  validate_responses: true
+  strict_validation: false
+  validation_timeout: 5.0
+  add_natural_delays: true
+  variation_factor: 0.3
+  simulate_mistakes: false
+  mistake_probability: 0.05
+
+# Scenario filtering
+scenario_filter_tags: null  # ["smoke", "critical"]
+exclude_tags: ["skip", "manual-only"]
+
+# Reporting settings
+save_detailed_logs: true
+generate_html_report: true
+save_metrics_json: true
+
+# Performance settings
+performance_benchmarking: false
+benchmark_iterations: 3
+
+# Retry settings
+retry_failed_scenarios: false
+max_scenario_retries: 2

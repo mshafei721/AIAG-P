@@ -1,0 +1,220 @@
+name: "Advanced Interaction Test"
+description: "Tests advanced browser interactions including wait conditions, complex selectors, and state tracking"
+tags: ["advanced", "interaction", "wait-conditions", "selectors"]
+timeout: 120
+
+config:
+  behavior:
+    thinking_delay_range: [0.5, 1.2]
+    add_natural_delays: true
+    validate_responses: true
+    strict_validation: true
+    error_recovery_enabled: true
+
+setup:
+  clear_cache: true
+  wait_time: 1
+
+steps:
+  - name: "Navigate to dynamic content page"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/html"
+      wait_until: "networkidle"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Wait for specific element to be attached"
+    command:
+      method: "wait"
+      selector: "body > div"
+      condition: "attached"
+      timeout: 10000
+    expected_result:
+      success: true
+
+  - name: "Extract with complex selector"
+    command:
+      method: "extract"
+      selector: "h1:first-of-type"
+      extract_type: "text"
+      trim_whitespace: true
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+
+  - name: "Extract multiple attributes"
+    command:
+      method: "extract"
+      selector: "a"
+      extract_type: "attribute"
+      attribute_name: "href"
+      multiple: true
+      timeout: 8000
+    expected_result:
+      success: true
+    assertions:
+      - type: "greater_than"
+        field: "result.elements_found"
+        expected: 0
+
+  - name: "Navigate to JSON endpoint"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/json"
+      wait_until: "load"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Extract JSON content"
+    command:
+      method: "extract"
+      selector: "pre"
+      extract_type: "text"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.data"
+        expected: "slideshow"
+
+  - name: "Navigate to headers endpoint"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/headers"
+      wait_until: "domcontentloaded"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Wait for content to stabilize"
+    command:
+      method: "wait"
+      condition: "load"
+      timeout: 5000
+    expected_result:
+      success: true
+
+  - name: "Extract headers JSON with precise selector"
+    command:
+      method: "extract"
+      selector: "body pre"
+      extract_type: "text"
+      trim_whitespace: true
+      timeout: 8000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.data"
+        expected: "headers"
+
+  - name: "Navigate back to forms for interaction testing"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/forms/post"
+      wait_until: "domcontentloaded"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Wait for form elements to be visible"
+    command:
+      method: "wait"
+      selector: "input[name='custname']"
+      condition: "visible"
+      timeout: 10000
+    expected_result:
+      success: true
+
+  - name: "Test complex form interaction with validation"
+    command:
+      method: "fill"
+      selector: "input[type='text'][name='custname']"
+      text: "Advanced Test User"
+      clear_first: true
+      validate_input: true
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.validation_passed"
+        expected: true
+
+  - name: "Test radio button selection with precise targeting"
+    command:
+      method: "click"
+      selector: "input[type='radio'][value='medium']"
+      timeout: 5000
+    expected_result:
+      success: true
+
+  - name: "Verify radio button state"
+    command:
+      method: "extract"
+      selector: "input[value='medium']"
+      extract_type: "property"
+      property_name: "checked"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.data"
+        expected: true
+
+  - name: "Test multiple checkbox interactions"
+    command:
+      method: "click"
+      selector: "input[type='checkbox'][value='mushroom']"
+      timeout: 5000
+    expected_result:
+      success: true
+
+  - name: "Verify checkbox state"
+    command:
+      method: "extract"
+      selector: "input[value='mushroom']"
+      extract_type: "property"
+      property_name: "checked"
+      timeout: 5000
+    expected_result:
+      success: true
+
+  - name: "Test textarea with special content"
+    command:
+      method: "fill"
+      selector: "textarea[name='delivery']"
+      text: "Special delivery instructions:\n- Line 1\n- Line 2 with \"quotes\"\n- Line 3 with 'apostrophes'"
+      clear_first: true
+      timeout: 12000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.current_value"
+        expected: "quotes"
+
+  - name: "Final state verification"
+    command:
+      method: "extract"
+      selector: "form"
+      extract_type: "html"
+      timeout: 8000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.data"
+        expected: "Advanced Test User"
+
+teardown:
+  reset_browser: false
+  wait_time: 0.5

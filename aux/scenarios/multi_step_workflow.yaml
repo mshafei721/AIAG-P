@@ -1,0 +1,193 @@
+name: "Multi-Step User Workflow Test"
+description: "Tests complex user journey with navigation, search, interaction, and data validation"
+tags: ["workflow", "multi-step", "complex", "integration"]
+timeout: 180
+
+config:
+  behavior:
+    thinking_delay_range: [0.7, 2.0]
+    typing_speed_range: [60, 120]
+    action_delay_range: [0.3, 1.0]
+    add_natural_delays: true
+    validate_responses: true
+    error_recovery_enabled: true
+    retry_attempts: 3
+
+setup:
+  clear_cache: true
+  wait_time: 2
+
+steps:
+  - name: "Navigate to DuckDuckGo search engine"
+    command:
+      method: "navigate"
+      url: "https://duckduckgo.com"
+      wait_until: "domcontentloaded"
+      timeout: 15000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.url"
+        expected: "duckduckgo.com"
+
+  - name: "Wait for search input to be ready"
+    command:
+      method: "wait"
+      selector: "input[name='q']"
+      condition: "visible"
+      timeout: 10000
+    expected_result:
+      success: true
+
+  - name: "Perform search for 'web automation testing'"
+    command:
+      method: "fill"
+      selector: "input[name='q']"
+      text: "web automation testing"
+      clear_first: true
+      press_enter: true
+      typing_delay_ms: 80
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.current_value"
+        expected: "automation"
+
+  - name: "Wait for search results to load"
+    command:
+      method: "wait"
+      selector: "article[data-testid='result']"
+      condition: "visible"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Extract search result titles"
+    command:
+      method: "extract"
+      selector: "article[data-testid='result'] h2"
+      extract_type: "text"
+      multiple: true
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "greater_than"
+        field: "result.elements_found"
+        expected: 3
+
+  - name: "Click on first search result"
+    command:
+      method: "click"
+      selector: "article[data-testid='result']:first-child h2 a"
+      timeout: 10000
+    expected_result:
+      success: true
+    retry_on_failure: true
+
+  - name: "Wait for new page to load"
+    command:
+      method: "wait"
+      condition: "load"
+      timeout: 20000
+    expected_result:
+      success: true
+
+  - name: "Extract current page title"
+    command:
+      method: "extract"
+      selector: "title"
+      extract_type: "text"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+
+  - name: "Navigate back to search results"
+    command:
+      method: "navigate"
+      url: "https://duckduckgo.com/?q=web+automation+testing"
+      wait_until: "domcontentloaded"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Wait for results to reload"
+    command:
+      method: "wait"
+      selector: "article[data-testid='result']"
+      condition: "visible"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Extract and count all visible search results"
+    command:
+      method: "extract"
+      selector: "article[data-testid='result']"
+      extract_type: "text"
+      multiple: true
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "greater_than"
+        field: "result.elements_found"
+        expected: 5
+
+  - name: "Verify search input still contains query"
+    command:
+      method: "extract"
+      selector: "input[name='q']"
+      extract_type: "property"
+      property_name: "value"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.data"
+        expected: "automation"
+
+  - name: "Clear search and enter new query"
+    command:
+      method: "fill"
+      selector: "input[name='q']"
+      text: "python selenium"
+      clear_first: true
+      press_enter: true
+      typing_delay_ms: 100
+      timeout: 10000
+    expected_result:
+      success: true
+
+  - name: "Wait for new search results"
+    command:
+      method: "wait"
+      selector: "article[data-testid='result']"
+      condition: "visible"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Verify search results changed"
+    command:
+      method: "extract"
+      selector: "article[data-testid='result']:first-child h2"
+      extract_type: "text"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+
+teardown:
+  cleanup_downloads: false
+  reset_browser: false
+  wait_time: 1

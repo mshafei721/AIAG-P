@@ -1,0 +1,85 @@
+name: "Basic Web Navigation Test"
+description: "Tests basic navigation capabilities and page content extraction"
+tags: ["navigation", "basic", "smoke"]
+timeout: 60
+
+config:
+  behavior:
+    thinking_delay_range: [0.3, 1.0]
+    add_natural_delays: true
+    validate_responses: true
+
+setup:
+  clear_cache: true
+  wait_time: 1
+
+steps:
+  - name: "Navigate to example.com"
+    command:
+      method: "navigate"
+      url: "https://example.com"
+      wait_until: "load"
+      timeout: 10000
+    expected_result:
+      success: true
+      result_checks:
+        status_code: 200
+    assertions:
+      - type: "equals"
+        field: "success"
+        expected: true
+      - type: "contains"
+        field: "result.url"
+        expected: "example.com"
+
+  - name: "Extract page title"
+    command:
+      method: "extract"
+      selector: "title"
+      extract_type: "text"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+      - type: "contains"
+        field: "result.data"
+        expected: "Example"
+
+  - name: "Extract main heading"
+    command:
+      method: "extract"
+      selector: "h1"
+      extract_type: "text"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+
+  - name: "Wait for page stability"
+    command:
+      method: "wait"
+      condition: "load"
+      timeout: 3000
+    expected_result:
+      success: true
+
+  - name: "Extract multiple paragraphs"
+    command:
+      method: "extract"
+      selector: "p"
+      extract_type: "text"
+      multiple: true
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "greater_than"
+        field: "result.elements_found"
+        expected: 0
+
+teardown:
+  wait_time: 0.5

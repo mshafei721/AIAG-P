@@ -1,0 +1,539 @@
+name: AUX Protocol Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run tests daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - security
+          - performance
+          - e2e
+          - regression
+          - smoke
+      python_version:
+        description: 'Python version to test'
+        required: false
+        default: '3.11'
+        type: choice
+        options:
+          - '3.8'
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+
+env:
+  # Global environment variables
+  PYTHONPATH: ${{ github.workspace }}/src
+  AUX_TEST_MODE: 'true'
+  AUX_LOG_LEVEL: 'INFO'
+  FORCE_COLOR: 1
+  PYTEST_TIMEOUT: 300
+
+jobs:
+  # Code quality and linting
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-lint-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-lint-
+            ${{ runner.os }}-pip-
+            
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          
+      - name: Run black formatter check
+        run: black --check --diff .
+        
+      - name: Run isort import sorting check
+        run: isort --check-only --diff .
+        
+      - name: Run flake8 linting
+        run: flake8 .
+        
+      - name: Run mypy type checking
+        run: mypy src/aux
+        
+      - name: Run bandit security linting
+        run: bandit -r src/aux -f json -o bandit-report.json
+        
+      - name: Upload bandit report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
+
+  # Unit tests
+  unit-tests:
+    name: Unit Tests
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'unit' || github.event.inputs.test_type == '' }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          # Skip some combinations to reduce CI time
+          - os: windows-latest
+            python-version: '3.8'
+          - os: macos-latest
+            python-version: '3.8'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ${{ runner.temp }}/.cache/pip
+          key: ${{ runner.os }}-py${{ matrix.python-version }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-py${{ matrix.python-version }}-pip-
+            ${{ runner.os }}-pip-
+            
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          
+      - name: Create necessary directories
+        run: |
+          mkdir -p logs reports htmlcov test_data
+          
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ \
+            --cov=src/aux \
+            --cov-report=xml:coverage-unit.xml \
+            --cov-report=html:htmlcov-unit \
+            --junit-xml=reports/junit-unit.xml \
+            --html=reports/unit-report.html \
+            -m "unit" \
+            --timeout=60 \
+            -v
+            
+      - name: Upload unit test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage-unit.xml
+          flags: unit,${{ matrix.os }},python${{ matrix.python-version }}
+          name: unit-${{ matrix.os }}-py${{ matrix.python-version }}
+          
+      - name: Upload unit test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-reports-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: |
+            reports/
+            htmlcov-unit/
+            logs/
+
+  # Integration tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'integration' || github.event.inputs.test_type == '' }}
+    services:
+      # Add any required services here (e.g., databases, message queues)
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ github.event.inputs.python_version || '3.11' }}
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-integration-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-integration-
+            ${{ runner.os }}-pip-
+            
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          playwright install chromium
+          
+      - name: Create necessary directories
+        run: |
+          mkdir -p logs reports htmlcov test_data
+          
+      - name: Run integration tests
+        run: |
+          xvfb-run -a pytest tests/integration/ \
+            --cov=src/aux \
+            --cov-report=xml:coverage-integration.xml \
+            --cov-report=html:htmlcov-integration \
+            --junit-xml=reports/junit-integration.xml \
+            --html=reports/integration-report.html \
+            -m "integration" \
+            --timeout=120 \
+            -v
+            
+      - name: Upload integration test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage-integration.xml
+          flags: integration
+          name: integration-tests
+          
+      - name: Upload integration test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-reports
+          path: |
+            reports/
+            htmlcov-integration/
+            logs/
+
+  # Security tests
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'security' || github.event.inputs.test_type == '' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          playwright install chromium
+          
+      - name: Run security tests
+        run: |
+          pytest tests/security/ \
+            --junit-xml=reports/junit-security.xml \
+            --html=reports/security-report.html \
+            -m "security" \
+            --timeout=180 \
+            -v
+            
+      - name: Run safety check
+        run: safety check --json --output safety-report.json
+        continue-on-error: true
+        
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: |
+            reports/
+            safety-report.json
+
+  # Performance tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'performance' || github.event.inputs.test_type == '' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          playwright install chromium
+          
+      - name: Run performance tests
+        run: |
+          pytest tests/performance/ \
+            --benchmark-json=benchmark-results.json \
+            --benchmark-histogram=benchmark-histogram \
+            --junit-xml=reports/junit-performance.xml \
+            --html=reports/performance-report.html \
+            -m "performance" \
+            --timeout=300 \
+            -v
+            
+      - name: Upload performance reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-reports
+          path: |
+            reports/
+            benchmark-results.json
+            .benchmarks/
+
+  # End-to-end tests
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'e2e' || github.event.inputs.test_type == '' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          playwright install chromium firefox webkit
+          
+      - name: Run E2E tests
+        run: |
+          xvfb-run -a pytest tests/e2e/ \
+            --junit-xml=reports/junit-e2e.xml \
+            --html=reports/e2e-report.html \
+            -m "e2e" \
+            --timeout=300 \
+            --maxfail=5 \
+            -v
+            
+      - name: Upload E2E test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-reports
+          path: |
+            reports/
+            logs/
+
+  # Regression tests
+  regression-tests:
+    name: Regression Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'regression' || github.event.inputs.test_type == '' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch full history for regression comparison
+          fetch-depth: 0
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          playwright install chromium
+          
+      - name: Run regression tests
+        run: |
+          pytest tests/regression/ \
+            --junit-xml=reports/junit-regression.xml \
+            --html=reports/regression-report.html \
+            -m "regression" \
+            --timeout=240 \
+            -v
+            
+      - name: Upload regression test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: regression-reports
+          path: |
+            reports/
+            logs/
+
+  # Smoke tests (fast subset for quick feedback)
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.test_type == 'smoke' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          
+      - name: Run smoke tests
+        run: |
+          pytest \
+            --junit-xml=reports/junit-smoke.xml \
+            --html=reports/smoke-report.html \
+            -m "smoke or (unit and fast)" \
+            --timeout=60 \
+            --maxfail=3 \
+            -x \
+            -v
+            
+      - name: Upload smoke test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-reports
+          path: reports/
+
+  # Combined coverage report
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    if: always() && (needs.unit-tests.result == 'success' || needs.integration-tests.result == 'success')
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage[toml] pytest-cov
+          
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: coverage-artifacts/
+          
+      - name: Combine coverage reports
+        run: |
+          find coverage-artifacts/ -name "coverage*.xml" -exec cp {} . \;
+          coverage combine
+          coverage xml -o combined-coverage.xml
+          coverage html -d combined-htmlcov
+          coverage report --show-missing
+          
+      - name: Upload combined coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./combined-coverage.xml
+          flags: combined
+          name: combined-coverage
+          
+      - name: Upload combined coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: combined-coverage-report
+          path: |
+            combined-coverage.xml
+            combined-htmlcov/
+
+  # Test result summary
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, integration-tests, security-tests, performance-tests, e2e-tests, regression-tests]
+    if: always()
+    
+    steps:
+      - name: Generate test summary
+        run: |
+          echo "# AUX Protocol Test Suite Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Category | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.unit-tests.result == 'success' && '✅ Passed' || needs.unit-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | ${{ needs.integration-tests.result == 'success' && '✅ Passed' || needs.integration-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Tests | ${{ needs.security-tests.result == 'success' && '✅ Passed' || needs.security-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance Tests | ${{ needs.performance-tests.result == 'success' && '✅ Passed' || needs.performance-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅ Passed' || needs.e2e-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Regression Tests | ${{ needs.regression-tests.result == 'success' && '✅ Passed' || needs.regression-tests.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Artifact Downloads" >> $GITHUB_STEP_SUMMARY
+          echo "- Test reports and coverage data are available in the Actions artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage reports: Look for *-reports artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance benchmarks: Look for performance-reports artifact" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Check overall status
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" ]] || 
+             [[ "${{ needs.unit-tests.result }}" == "failure" ]] || 
+             [[ "${{ needs.integration-tests.result }}" == "failure" ]] || 
+             [[ "${{ needs.security-tests.result }}" == "failure" ]] || 
+             [[ "${{ needs.e2e-tests.result }}" == "failure" ]] || 
+             [[ "${{ needs.regression-tests.result }}" == "failure" ]]; then
+            echo "❌ Test suite failed - see individual job results for details"
+            exit 1
+          else
+            echo "✅ All tests passed successfully!"
+          fi

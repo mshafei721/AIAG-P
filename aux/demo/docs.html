@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUX Protocol Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="demo.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-robot text-white text-2xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">AUX Protocol</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">Agent UX Layer - Interactive Documentation</p>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-rocket mr-2 text-blue-500"></i>Quick Reference
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Core Commands</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <span class="command-badge command-navigate mr-2">NAVIGATE</span>
+                            <span class="text-gray-700 dark:text-gray-300">Load web pages</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="command-badge command-click mr-2">CLICK</span>
+                            <span class="text-gray-700 dark:text-gray-300">Click elements</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="command-badge command-fill mr-2">FILL</span>
+                            <span class="text-gray-700 dark:text-gray-300">Fill input fields</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="command-badge command-extract mr-2">EXTRACT</span>
+                            <span class="text-gray-700 dark:text-gray-300">Extract data</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="command-badge command-wait mr-2">WAIT</span>
+                            <span class="text-gray-700 dark:text-gray-300">Wait for conditions</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Key Features</h3>
+                    <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Real-time WebSocket communication</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>JSON-based command structure</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Comprehensive error handling</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Session management</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Performance monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Command Reference -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-code mr-2 text-blue-500"></i>Command Reference
+            </h2>
+
+            <!-- Navigate Command -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Navigate Command</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Load a webpage and wait for specified conditions.</p>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "nav_001",
+  "method": "navigate",
+  "session_id": "session_123",
+  "url": "https://example.com",
+  "wait_until": "load",
+  "referer": "https://google.com",
+  "timeout": 30000
+}</code></pre>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Required Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">id</code> - Unique command identifier</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">method</code> - "navigate"</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">session_id</code> - Browser session ID</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">url</code> - Target URL (http/https)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Optional Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">wait_until</code> - load, domcontentloaded, networkidle</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">referer</code> - Referer header value</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">timeout</code> - Timeout in milliseconds</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Click Command -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Click Command</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Click on page elements using CSS selectors.</p>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "click_001",
+  "method": "click",
+  "session_id": "session_123",
+  "selector": "button.submit",
+  "button": "left",
+  "click_count": 1,
+  "force": false,
+  "position": { "x": 0.5, "y": 0.5 },
+  "timeout": 30000
+}</code></pre>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Required Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">selector</code> - CSS selector for target element</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Optional Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">button</code> - left, right, middle</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">click_count</code> - Number of clicks (1-10)</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">force</code> - Click even if not visible</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">position</code> - Relative position (x, y: 0.0-1.0)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fill Command -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Fill Command</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Fill input fields with text content.</p>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "fill_001",
+  "method": "fill",
+  "session_id": "session_123",
+  "selector": "input[name='username']",
+  "text": "john_doe",
+  "clear_first": true,
+  "press_enter": false,
+  "typing_delay_ms": 50,
+  "validate_input": true,
+  "timeout": 30000
+}</code></pre>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Required Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">selector</code> - CSS selector for input element</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">text</code> - Text to enter</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Optional Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">clear_first</code> - Clear existing content</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">press_enter</code> - Press Enter after filling</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">typing_delay_ms</code> - Delay between keystrokes</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">validate_input</code> - Validate text was entered</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extract Command -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Extract Command</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Extract data from page elements.</p>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "extract_001",
+  "method": "extract",
+  "session_id": "session_123",
+  "selector": "h1",
+  "extract_type": "text",
+  "attribute_name": "href",
+  "multiple": false,
+  "trim_whitespace": true,
+  "timeout": 30000
+}</code></pre>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Required Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">selector</code> - CSS selector for target elements</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">extract_type</code> - text, html, attribute, property</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Optional Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">attribute_name</code> - For attribute extraction</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">property_name</code> - For property extraction</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">multiple</code> - Extract from all matching elements</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">trim_whitespace</code> - Trim extracted text</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wait Command -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Wait Command</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Wait for elements or conditions to be met.</p>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "wait_001",
+  "method": "wait",
+  "session_id": "session_123",
+  "selector": ".loading",
+  "condition": "hidden",
+  "text_content": "Complete",
+  "attribute_value": { "class": "finished" },
+  "custom_js": "return document.readyState === 'complete';",
+  "poll_interval_ms": 100,
+  "timeout": 30000
+}</code></pre>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Required Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">condition</code> - visible, hidden, attached, detached, load</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Optional Parameters</h4>
+                        <ul class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">selector</code> - CSS selector (required for element conditions)</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">text_content</code> - Wait for specific text</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">attribute_value</code> - Wait for attribute value</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">custom_js</code> - Custom JavaScript condition</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-600 px-1 rounded">poll_interval_ms</code> - Polling interval (50-5000ms)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Format -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-reply mr-2 text-blue-500"></i>Response Format
+            </h2>
+
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Success Response</h3>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "cmd_001",
+  "success": true,
+  "timestamp": 1703123456.789,
+  "execution_time_ms": 250,
+  // Command-specific data
+  "url": "https://example.com",
+  "title": "Example Domain",
+  "status_code": 200
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Error Response</h3>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <pre class="text-sm overflow-x-auto"><code>{
+  "id": "cmd_001",
+  "success": false,
+  "error": "Element not found",
+  "error_code": "ELEMENT_NOT_FOUND",
+  "error_type": "element_error",
+  "details": {
+    "selector": ".non-existent",
+    "page_url": "https://example.com"
+  },
+  "timestamp": 1703123456.789
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Codes -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i>Error Codes
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">General Errors</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">UNKNOWN_ERROR</code> - Unexpected error</li>
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">INVALID_COMMAND</code> - Invalid command format</li>
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">INVALID_PARAMS</code> - Invalid parameters</li>
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">TIMEOUT</code> - Command timeout</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Specific Errors</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">SESSION_NOT_FOUND</code> - Invalid session</li>
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">ELEMENT_NOT_FOUND</code> - Element not found</li>
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">NAVIGATION_FAILED</code> - Page load failed</li>
+                        <li><code class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">EXTRACTION_FAILED</code> - Data extraction failed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Best Practices
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Performance</h3>
+                    <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Use specific CSS selectors</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Set appropriate timeouts</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Wait for elements before interacting</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Batch multiple extractions</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Reliability</h3>
+                    <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Handle errors gracefully</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Use wait conditions</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Validate extracted data</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Test with different page states</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

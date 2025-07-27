@@ -1,2 +1,3 @@
 [console_scripts]
 aux-server = aux.server.websocket_server:main
+aux-test = aux.testing.main:app

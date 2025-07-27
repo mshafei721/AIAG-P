@@ -1,0 +1,468 @@
+/**
+ * AUX Protocol Demo - Custom Styles
+ * 
+ * Additional styles to enhance the demo interface beyond Tailwind CSS.
+ * Includes animations, custom components, and responsive adjustments.
+ */
+
+/* Root variables for consistent theming */
+:root {
+  --aux-primary: #0ea5e9;
+  --aux-primary-dark: #0284c7;
+  --aux-secondary: #64748b;
+  --aux-accent: #8b5cf6;
+  --aux-success: #10b981;
+  --aux-warning: #f59e0b;
+  --aux-error: #ef4444;
+  --aux-border-radius: 8px;
+  --aux-transition: 0.2s ease-in-out;
+  --aux-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --aux-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Enhanced scrollbar styling */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--aux-secondary) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--aux-secondary);
+  border-radius: 3px;
+  transition: background-color var(--aux-transition);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--aux-primary);
+}
+
+/* Dark mode scrollbar */
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #64748b;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--aux-primary);
+}
+
+/* Connection indicator animation */
+.connection-indicator {
+  animation: pulse-connection 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-connection {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Command badge styles */
+.command-badge {
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  transition: all var(--aux-transition);
+}
+
+.command-navigate {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border: 1px solid #3b82f6;
+}
+
+.command-click {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  border: 1px solid #22c55e;
+}
+
+.command-fill {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.command-extract {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  color: #be185d;
+  border: 1px solid #ec4899;
+}
+
+.command-wait {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #3730a3;
+  border: 1px solid #6366f1;
+}
+
+/* Dark mode command badges */
+.dark .command-navigate {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  color: #dbeafe;
+}
+
+.dark .command-click {
+  background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+  color: #dcfce7;
+}
+
+.dark .command-fill {
+  background: linear-gradient(135deg, #92400e 0%, #a16207 100%);
+  color: #fef3c7;
+}
+
+.dark .command-extract {
+  background: linear-gradient(135deg, #831843 0%, #be185d 100%);
+  color: #fce7f3;
+}
+
+.dark .command-wait {
+  background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+  color: #e0e7ff;
+}
+
+/* Enhanced button styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--aux-primary) 0%, var(--aux-primary-dark) 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--aux-border-radius);
+  transition: all var(--aux-transition);
+  box-shadow: var(--aux-shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--aux-shadow-lg);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--aux-shadow);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--aux-shadow);
+}
+
+/* Monaco Editor container enhancements */
+.monaco-editor-container {
+  border-radius: var(--aux-border-radius);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color var(--aux-transition);
+}
+
+.monaco-editor-container:focus-within {
+  border-color: var(--aux-primary);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 
+              0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.dark .monaco-editor-container {
+  border-color: #374151;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dark .monaco-editor-container:focus-within {
+  border-color: var(--aux-primary);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 
+              0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* Status badge animations */
+.status-badge {
+  animation: status-appear 0.3s ease-out;
+}
+
+@keyframes status-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Toast notification styles */
+.toast {
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--aux-shadow-lg);
+}
+
+/* Tab navigation enhancements */
+.tab-btn {
+  position: relative;
+  transition: all var(--aux-transition);
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background-color var(--aux-transition);
+}
+
+.tab-btn.active::after {
+  background: var(--aux-primary);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--aux-primary);
+}
+
+/* Quick command hover effects */
+.quick-command {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--aux-transition);
+}
+
+.quick-command::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.quick-command:hover::before {
+  left: 100%;
+}
+
+/* Scenario button enhancements */
+.scenario-btn {
+  position: relative;
+  transition: all var(--aux-transition);
+  overflow: hidden;
+}
+
+.scenario-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity var(--aux-transition);
+}
+
+.scenario-btn:hover::after {
+  opacity: 1;
+}
+
+/* History item styling */
+.history-item {
+  transition: all var(--aux-transition);
+  border-left: 3px solid transparent;
+}
+
+.history-item:hover {
+  border-left-color: var(--aux-primary);
+  background: rgba(14, 165, 233, 0.05);
+}
+
+.dark .history-item:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f4f6;
+  border-radius: 50%;
+  border-top-color: var(--aux-primary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .monaco-editor-container {
+    min-height: 200px;
+  }
+  
+  .quick-command,
+  .scenario-btn {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+  }
+  
+  .command-badge {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.375rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .monaco-editor-container {
+    border: 1px solid #000;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .command-badge {
+    border-width: 2px;
+    font-weight: 700;
+  }
+  
+  .monaco-editor-container {
+    border-width: 2px;
+  }
+  
+  .btn-primary {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .connection-indicator {
+    animation: none;
+  }
+}
+
+/* Focus visible improvements */
+.focus-visible {
+  outline: 2px solid var(--aux-primary);
+  outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(14, 165, 233, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(14, 165, 233, 0.3);
+  color: inherit;
+}
+
+/* Custom utility classes */
+.gradient-text {
+  background: linear-gradient(135deg, var(--aux-primary) 0%, var(--aux-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-effect {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced hover states */
+.hover-lift {
+  transition: transform var(--aux-transition), box-shadow var(--aux-transition);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--aux-shadow-lg);
+}
+
+/* Code syntax highlighting improvements */
+.monaco-editor .token.string {
+  color: #22c55e !important;
+}
+
+.monaco-editor .token.number {
+  color: #f59e0b !important;
+}
+
+.monaco-editor .token.boolean {
+  color: #8b5cf6 !important;
+}
+
+.monaco-editor .token.null {
+  color: #ef4444 !important;
+}
+
+/* Dark theme Monaco improvements */
+.monaco-editor.vs-dark .token.string {
+  color: #86efac !important;
+}
+
+.monaco-editor.vs-dark .token.number {
+  color: #fbbf24 !important;
+}
+
+.monaco-editor.vs-dark .token.boolean {
+  color: #a78bfa !important;
+}
+
+.monaco-editor.vs-dark .token.null {
+  color: #fca5a5 !important;
+}

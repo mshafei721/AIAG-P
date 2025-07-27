@@ -1,0 +1,190 @@
+name: "Error Handling and Resilience Test"
+description: "Tests agent resilience to various error conditions and recovery mechanisms"
+tags: ["error-handling", "resilience", "recovery", "edge-cases"]
+timeout: 150
+
+config:
+  behavior:
+    thinking_delay_range: [0.2, 0.8]
+    add_natural_delays: true
+    validate_responses: true
+    error_recovery_enabled: true
+    retry_attempts: 3
+    retry_delay_range: [1.0, 2.0]
+
+setup:
+  clear_cache: true
+  wait_time: 1
+
+steps:
+  - name: "Navigate to valid page first"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org"
+      wait_until: "load"
+      timeout: 15000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "success"
+        expected: true
+
+  - name: "Test navigation to non-existent page (should fail gracefully)"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/nonexistent-page-404"
+      wait_until: "load"
+      timeout: 15000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Recover by navigating to valid page"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org"
+      wait_until: "load"
+      timeout: 15000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "success"
+        expected: true
+
+  - name: "Test clicking non-existent element (should fail)"
+    command:
+      method: "click"
+      selector: "button#non-existent-button-12345"
+      timeout: 3000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Test filling non-existent input field (should fail)"
+    command:
+      method: "fill"
+      selector: "input#non-existent-input-98765"
+      text: "test text"
+      timeout: 3000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Test extracting from non-existent element (should fail)"
+    command:
+      method: "extract"
+      selector: "div#non-existent-div-54321"
+      extract_type: "text"
+      timeout: 3000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Navigate to forms page for valid interactions"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/forms/post"
+      wait_until: "domcontentloaded"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Test valid interaction after errors"
+    command:
+      method: "extract"
+      selector: "form"
+      extract_type: "html"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+      - type: "contains"
+        field: "result.data"
+        expected: "form"
+
+  - name: "Test timeout scenario with very short timeout"
+    command:
+      method: "wait"
+      condition: "networkidle"
+      timeout: 100
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Test invalid selector syntax (should fail)"
+    command:
+      method: "click"
+      selector: "invalid>>selector::syntax"
+      timeout: 3000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Test filling valid field with special characters"
+    command:
+      method: "fill"
+      selector: "input[name='custname']"
+      text: "Test User with Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?"
+      clear_first: true
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.current_value"
+        expected: "Special chars"
+
+  - name: "Test extremely long text input"
+    command:
+      method: "fill"
+      selector: "textarea[name='delivery']"
+      text: "This is an extremely long text input that should test the system's ability to handle large amounts of text data. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+      clear_first: true
+      typing_delay_ms: 10
+      timeout: 30000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.current_value"
+        expected: "Lorem ipsum"
+
+  - name: "Test wait for non-existent condition"
+    command:
+      method: "wait"
+      selector: "div#will-never-exist"
+      condition: "visible"
+      timeout: 2000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+  - name: "Final recovery validation"
+    command:
+      method: "extract"
+      selector: "title"
+      extract_type: "text"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "not_empty"
+        field: "result.data"
+
+  - name: "Test navigation to invalid URL format"
+    command:
+      method: "navigate"
+      url: "not-a-valid-url"
+      wait_until: "load"
+      timeout: 5000
+    expected_result:
+      success: false
+    retry_on_failure: false
+
+teardown:
+  reset_browser: true
+  wait_time: 1

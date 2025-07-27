@@ -1,0 +1,414 @@
+{
+  "basic_commands": {
+    "navigate": {
+      "id": "nav_001",
+      "method": "navigate",
+      "session_id": "demo_session",
+      "url": "https://example.com",
+      "wait_until": "load",
+      "timeout": 30000
+    },
+    "click": {
+      "id": "click_001",
+      "method": "click",
+      "session_id": "demo_session",
+      "selector": "button.submit",
+      "button": "left",
+      "click_count": 1,
+      "timeout": 30000
+    },
+    "fill": {
+      "id": "fill_001",
+      "method": "fill",
+      "session_id": "demo_session",
+      "selector": "input[name='username']",
+      "text": "demo_user",
+      "clear_first": true,
+      "press_enter": false,
+      "timeout": 30000
+    },
+    "extract": {
+      "id": "extract_001",
+      "method": "extract",
+      "session_id": "demo_session",
+      "selector": "h1",
+      "extract_type": "text",
+      "multiple": false,
+      "timeout": 30000
+    },
+    "wait": {
+      "id": "wait_001",
+      "method": "wait",
+      "session_id": "demo_session",
+      "selector": ".loading",
+      "condition": "hidden",
+      "timeout": 30000
+    }
+  },
+  "advanced_commands": {
+    "navigate_with_referer": {
+      "id": "nav_002",
+      "method": "navigate",
+      "session_id": "demo_session",
+      "url": "https://httpbin.org/get",
+      "wait_until": "networkidle",
+      "referer": "https://example.com",
+      "timeout": 30000
+    },
+    "click_with_position": {
+      "id": "click_002",
+      "method": "click",
+      "session_id": "demo_session",
+      "selector": ".large-button",
+      "button": "left",
+      "position": {
+        "x": 0.25,
+        "y": 0.75
+      },
+      "force": false,
+      "timeout": 30000
+    },
+    "fill_with_typing_delay": {
+      "id": "fill_002",
+      "method": "fill",
+      "session_id": "demo_session",
+      "selector": "input[type='text']",
+      "text": "Slowly typed text",
+      "clear_first": true,
+      "typing_delay_ms": 100,
+      "press_enter": true,
+      "validate_input": true,
+      "timeout": 30000
+    },
+    "extract_multiple_attributes": {
+      "id": "extract_002",
+      "method": "extract",
+      "session_id": "demo_session",
+      "selector": "a",
+      "extract_type": "attribute",
+      "attribute_name": "href",
+      "multiple": true,
+      "trim_whitespace": true,
+      "timeout": 30000
+    },
+    "wait_for_text_content": {
+      "id": "wait_002",
+      "method": "wait",
+      "session_id": "demo_session",
+      "selector": ".status",
+      "condition": "visible",
+      "text_content": "Complete",
+      "poll_interval_ms": 200,
+      "timeout": 30000
+    },
+    "wait_with_custom_js": {
+      "id": "wait_003",
+      "method": "wait",
+      "session_id": "demo_session",
+      "condition": "load",
+      "custom_js": "return document.readyState === 'complete' && window.jQuery !== undefined;",
+      "poll_interval_ms": 100,
+      "timeout": 30000
+    }
+  },
+  "workflow_examples": {
+    "login_workflow": [
+      {
+        "id": "login_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://httpbin.org/forms/post",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "login_02",
+        "method": "fill",
+        "session_id": "demo_session",
+        "selector": "input[name='custname']",
+        "text": "john_doe",
+        "clear_first": true,
+        "timeout": 30000
+      },
+      {
+        "id": "login_03",
+        "method": "fill",
+        "session_id": "demo_session",
+        "selector": "input[name='custemail']",
+        "text": "john@example.com",
+        "clear_first": true,
+        "timeout": 30000
+      },
+      {
+        "id": "login_04",
+        "method": "click",
+        "session_id": "demo_session",
+        "selector": "input[type='submit']",
+        "timeout": 30000
+      }
+    ],
+    "search_workflow": [
+      {
+        "id": "search_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://demo.opencart.com/",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "search_02",
+        "method": "fill",
+        "session_id": "demo_session",
+        "selector": "input[name='search']",
+        "text": "MacBook",
+        "clear_first": true,
+        "timeout": 30000
+      },
+      {
+        "id": "search_03",
+        "method": "click",
+        "session_id": "demo_session",
+        "selector": "button.btn-default",
+        "timeout": 30000
+      },
+      {
+        "id": "search_04",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".product-thumb h4 a",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      }
+    ],
+    "data_scraping_workflow": [
+      {
+        "id": "scrape_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://quotes.toscrape.com/",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "scrape_02",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".quote .text",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      },
+      {
+        "id": "scrape_03",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".quote .author",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      },
+      {
+        "id": "scrape_04",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".quote .tags a",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      },
+      {
+        "id": "scrape_05",
+        "method": "click",
+        "session_id": "demo_session",
+        "selector": ".next a",
+        "timeout": 30000
+      }
+    ]
+  },
+  "error_scenarios": {
+    "invalid_selector": {
+      "id": "error_01",
+      "method": "click",
+      "session_id": "demo_session",
+      "selector": ".non-existent-element-xyz",
+      "timeout": 5000
+    },
+    "invalid_url": {
+      "id": "error_02",
+      "method": "navigate",
+      "session_id": "demo_session",
+      "url": "https://this-domain-does-not-exist-12345.com",
+      "timeout": 10000
+    },
+    "timeout_scenario": {
+      "id": "error_03",
+      "method": "wait",
+      "session_id": "demo_session",
+      "selector": ".loading-spinner-never-appears",
+      "condition": "visible",
+      "timeout": 3000
+    },
+    "invalid_attribute": {
+      "id": "error_04",
+      "method": "extract",
+      "session_id": "demo_session",
+      "selector": "body",
+      "extract_type": "attribute",
+      "attribute_name": "non-existent-attribute",
+      "timeout": 5000
+    }
+  },
+  "performance_tests": {
+    "rapid_commands": [
+      {
+        "id": "perf_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://example.com",
+        "wait_until": "load",
+        "timeout": 15000
+      },
+      {
+        "id": "perf_02",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": "h1",
+        "extract_type": "text",
+        "timeout": 5000
+      },
+      {
+        "id": "perf_03",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": "p",
+        "extract_type": "text",
+        "timeout": 5000
+      },
+      {
+        "id": "perf_04",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": "a",
+        "extract_type": "attribute",
+        "attribute_name": "href",
+        "timeout": 5000
+      }
+    ],
+    "bulk_extraction": {
+      "id": "perf_bulk",
+      "method": "extract",
+      "session_id": "demo_session",
+      "selector": "*",
+      "extract_type": "text",
+      "multiple": true,
+      "timeout": 30000
+    }
+  },
+  "real_world_scenarios": {
+    "github_navigation": [
+      {
+        "id": "github_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://github.com",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "github_02",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".Header-link",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      }
+    ],
+    "news_scraping": [
+      {
+        "id": "news_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://news.ycombinator.com",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "news_02",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".storylink",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      },
+      {
+        "id": "news_03",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": ".score",
+        "extract_type": "text",
+        "multiple": true,
+        "timeout": 30000
+      }
+    ],
+    "documentation_testing": [
+      {
+        "id": "docs_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://developer.mozilla.org/en-US/",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "docs_02",
+        "method": "fill",
+        "session_id": "demo_session",
+        "selector": "input[type='search']",
+        "text": "fetch API",
+        "clear_first": true,
+        "timeout": 30000
+      },
+      {
+        "id": "docs_03",
+        "method": "click",
+        "session_id": "demo_session",
+        "selector": "button[type='submit']",
+        "timeout": 30000
+      }
+    ]
+  },
+  "accessibility_tests": {
+    "keyboard_navigation": [
+      {
+        "id": "a11y_01",
+        "method": "navigate",
+        "session_id": "demo_session",
+        "url": "https://example.com",
+        "wait_until": "load",
+        "timeout": 30000
+      },
+      {
+        "id": "a11y_02",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": "[role='main']",
+        "extract_type": "text",
+        "timeout": 30000
+      },
+      {
+        "id": "a11y_03",
+        "method": "extract",
+        "session_id": "demo_session",
+        "selector": "[aria-label]",
+        "extract_type": "attribute",
+        "attribute_name": "aria-label",
+        "multiple": true,
+        "timeout": 30000
+      }
+    ]
+  }
+}

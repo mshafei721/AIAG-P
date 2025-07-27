@@ -1,0 +1,182 @@
+name: "Complete Form Interaction Test"
+description: "Tests comprehensive form filling, validation, and submission capabilities"
+tags: ["forms", "interaction", "comprehensive"]
+timeout: 120
+
+config:
+  behavior:
+    thinking_delay_range: [0.5, 1.5]
+    typing_speed_range: [80, 150]
+    add_natural_delays: true
+    validate_responses: true
+    error_recovery_enabled: true
+
+setup:
+  clear_cache: true
+  initial_url: "https://httpbin.org/forms/post"
+  wait_time: 2
+
+steps:
+  - name: "Navigate to form test page"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/forms/post"
+      wait_until: "domcontentloaded"
+      timeout: 15000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "success"
+        expected: true
+      - type: "contains"
+        field: "result.url"
+        expected: "httpbin.org"
+
+  - name: "Wait for form to be visible"
+    command:
+      method: "wait"
+      selector: "form"
+      condition: "visible"
+      timeout: 10000
+    expected_result:
+      success: true
+
+  - name: "Fill customer name field"
+    command:
+      method: "fill"
+      selector: "input[name='custname']"
+      text: "John Doe"
+      clear_first: true
+      typing_delay_ms: 50
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.current_value"
+        expected: "John Doe"
+
+  - name: "Fill customer telephone"
+    command:
+      method: "fill"
+      selector: "input[name='custtel']"
+      text: "+1-555-123-4567"
+      clear_first: true
+      typing_delay_ms: 30
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.current_value"
+        expected: "+1-555-123-4567"
+
+  - name: "Fill email address"
+    command:
+      method: "fill"
+      selector: "input[name='custemail']"
+      text: "john.doe@example.com"
+      clear_first: true
+      typing_delay_ms: 40
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.current_value"
+        expected: "john.doe@example.com"
+
+  - name: "Select pizza size - Small"
+    command:
+      method: "click"
+      selector: "input[value='small']"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.element_found"
+        expected: true
+
+  - name: "Select topping - Bacon"
+    command:
+      method: "click"
+      selector: "input[value='bacon']"
+      timeout: 5000
+    expected_result:
+      success: true
+
+  - name: "Select topping - Cheese"
+    command:
+      method: "click"
+      selector: "input[value='cheese']"
+      timeout: 5000
+    expected_result:
+      success: true
+
+  - name: "Fill delivery instructions"
+    command:
+      method: "fill"
+      selector: "textarea[name='delivery']"
+      text: "Please ring doorbell twice. Leave at front door if no answer."
+      clear_first: true
+      typing_delay_ms: 60
+      timeout: 15000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.current_value"
+        expected: "doorbell"
+
+  - name: "Verify form completion before submit"
+    command:
+      method: "extract"
+      selector: "input[name='custname']"
+      extract_type: "property"
+      property_name: "value"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.data"
+        expected: "John Doe"
+
+  - name: "Submit the form"
+    command:
+      method: "click"
+      selector: "input[type='submit']"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "equals"
+        field: "result.element_found"
+        expected: true
+
+  - name: "Wait for form submission response"
+    command:
+      method: "wait"
+      condition: "load"
+      timeout: 15000
+    expected_result:
+      success: true
+
+  - name: "Verify submission success"
+    command:
+      method: "extract"
+      selector: "body"
+      extract_type: "text"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "contains"
+        field: "result.data"
+        expected: "args"
+
+teardown:
+  reset_browser: false
+  wait_time: 1

@@ -1,0 +1,1 @@
+"""Integration tests for AUX Protocol component interactions."""

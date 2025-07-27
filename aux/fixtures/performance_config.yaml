@@ -1,0 +1,41 @@
+# AUX Performance Testing Configuration
+# Optimized for speed and minimal delays
+
+server_url: "ws://localhost:8765"
+
+# Performance-focused execution
+max_parallel_agents: 5
+execution_timeout: 120
+stop_on_first_failure: false
+
+# High-speed agent behavior
+default_behavior:
+  thinking_delay_range: [0.0, 0.1]
+  typing_speed_range: [500, 1000]
+  action_delay_range: [0.0, 0.1]
+  retry_attempts: 2
+  retry_delay_range: [0.5, 1.0]
+  error_recovery_enabled: true
+  validate_responses: true
+  strict_validation: false
+  validation_timeout: 2.0
+  add_natural_delays: false
+  variation_factor: 0.1
+  simulate_mistakes: false
+  mistake_probability: 0.0
+
+# Performance scenario filtering
+scenario_filter_tags: ["performance", "benchmark", "speed"]
+exclude_tags: ["slow", "interactive"]
+
+# Minimal reporting for speed
+save_detailed_logs: false
+generate_html_report: true
+save_metrics_json: true
+
+# Performance benchmarking enabled
+performance_benchmarking: true
+benchmark_iterations: 5
+
+retry_failed_scenarios: false
+max_scenario_retries: 1

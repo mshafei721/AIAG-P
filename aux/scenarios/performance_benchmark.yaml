@@ -1,0 +1,245 @@
+name: "Performance Benchmark Test"
+description: "Benchmarks AUX protocol performance with rapid interactions and measurements"
+tags: ["performance", "benchmark", "speed", "load-test"]
+timeout: 300
+
+config:
+  behavior:
+    thinking_delay_range: [0.0, 0.1]  # Minimal delays for performance testing
+    typing_speed_range: [500, 1000]  # Very fast typing
+    action_delay_range: [0.0, 0.1]   # Minimal action delays
+    add_natural_delays: false        # Disable human-like delays
+    validate_responses: true
+    error_recovery_enabled: true
+    retry_attempts: 2
+
+setup:
+  clear_cache: true
+  wait_time: 0.5
+
+steps:
+  - name: "Rapid navigation test 1"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org"
+      wait_until: "domcontentloaded"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 5.0
+
+  - name: "Fast text extraction"
+    command:
+      method: "extract"
+      selector: "body"
+      extract_type: "text"
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 2.0
+
+  - name: "Rapid navigation test 2"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/html"
+      wait_until: "domcontentloaded"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 5.0
+
+  - name: "Multiple element extraction"
+    command:
+      method: "extract"
+      selector: "p"
+      extract_type: "text"
+      multiple: true
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 2.0
+
+  - name: "Fast form navigation"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org/forms/post"
+      wait_until: "domcontentloaded"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 5.0
+
+  - name: "Rapid form filling - name"
+    command:
+      method: "fill"
+      selector: "input[name='custname']"
+      text: "SpeedTest"
+      clear_first: true
+      typing_delay_ms: 0
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 1.0
+
+  - name: "Rapid form filling - phone"
+    command:
+      method: "fill"
+      selector: "input[name='custtel']"
+      text: "555-0000"
+      clear_first: true
+      typing_delay_ms: 0
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 1.0
+
+  - name: "Rapid form filling - email"
+    command:
+      method: "fill"
+      selector: "input[name='custemail']"
+      text: "speed@test.com"
+      clear_first: true
+      typing_delay_ms: 0
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 1.0
+
+  - name: "Fast click sequence 1"
+    command:
+      method: "click"
+      selector: "input[value='small']"
+      timeout: 3000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 0.5
+
+  - name: "Fast click sequence 2"
+    command:
+      method: "click"
+      selector: "input[value='bacon']"
+      timeout: 3000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 0.5
+
+  - name: "Fast click sequence 3"
+    command:
+      method: "click"
+      selector: "input[value='cheese']"
+      timeout: 3000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 0.5
+
+  - name: "Rapid textarea filling"
+    command:
+      method: "fill"
+      selector: "textarea[name='delivery']"
+      text: "Fast delivery instructions for performance testing"
+      clear_first: true
+      typing_delay_ms: 0
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 1.0
+
+  - name: "Fast extraction verification"
+    command:
+      method: "extract"
+      selector: "input[name='custname']"
+      extract_type: "property"
+      property_name: "value"
+      timeout: 3000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 0.5
+      - type: "equals"
+        field: "result.data"
+        expected: "SpeedTest"
+
+  - name: "Batch element extraction"
+    command:
+      method: "extract"
+      selector: "input"
+      extract_type: "attribute"
+      attribute_name: "name"
+      multiple: true
+      timeout: 5000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 1.0
+      - type: "greater_than"
+        field: "result.elements_found"
+        expected: 3
+
+  - name: "Final rapid navigation"
+    command:
+      method: "navigate"
+      url: "https://httpbin.org"
+      wait_until: "domcontentloaded"
+      timeout: 10000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 5.0
+
+  - name: "Final extraction benchmark"
+    command:
+      method: "extract"
+      selector: "title"
+      extract_type: "text"
+      timeout: 3000
+    expected_result:
+      success: true
+    assertions:
+      - type: "less_than"
+        field: "execution_time"
+        expected: 0.5
+
+teardown:
+  wait_time: 0
